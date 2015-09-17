@@ -10,10 +10,16 @@ class RhizomeSpider(scrapy.Spider):
     start_urls = [
         "http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=raspberry+pi"
     ]
+    rules = (Rule (SgmlLinkExtractor(allow=("a-link-normal s-access-detail-page  a-text-normal", ),restrict_xpaths=('//p[@class="nextpage"]',))
+    , callback="parse", follow= True),
+    )
 
     def parse(self, response):
-        print "IN PARSE DRESS"      
-        item = PervasiverhizomeItem()
         sel=Selector(response)
-        item['url_title'] = sel.xpath('///h2[@class="a-size-base a-color-null s-inline s-access-title a-text-normal"]/text()')
-        yield item
+        items= []
+        titles=sel.xpath('//a[@class="a-link-normal s-access-detail-page  a-text-normal"]/@title')
+        for title in titles:
+            item = PervasiverhizomeItem()
+            item['url_title'] = title.extract()
+            items.append(item)
+        return items
