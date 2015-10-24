@@ -8,7 +8,8 @@ var randR;
 var randG;
 var randB;
 
-var notes = [ 60, 62, 64, 65, 67, 69, 71];
+var notes = [61,62,63,64,65,66,67,68];
+var socket;
 // For automatically playing the song
 var index = 0;
 var song = [ 
@@ -26,10 +27,11 @@ var autoplay = false;
 var osc;
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  notes=[random(22,106), random(22,106), random(22,106), random(22,106), random(22,106), random(22,106), random(22,106)];
   //background(0);
   // Start a socket connection to the server
   // Some day we would run this server somewhere else
-  socket = io.connect('http://10.1.1.203:8080');
+  socket = io.connect('http://10.1.1.153:8080');
  // randomShape=random(0,2);
   randR=random(0,255);
   randG=random(0,255);
@@ -49,6 +51,7 @@ function setup() {
     function(data) {
 
     //music
+    window.console.log(accelerationX);
      if (millis() > trigger){
     if(index<song.length)
     {
@@ -75,11 +78,13 @@ function setup() {
         randR=random(0,255);
         randG=random(0,255);
         randB=random(0,255);
+        osc.freq(random(10,40),5,10);
+        
       
       }
       fill(randR,randG,randB);
       noStroke();
-      ellipse(data.x,data.y,50,50);
+      ellipse(data.x,data.y,data.a,data.b);
       // if(randomShape==0)
       //   ellipse(data.x,data.y,80,80);
       // else if(randomShape==1)
@@ -105,7 +110,6 @@ function playNote(note, duration) {
     }, duration-50);
   }
 }
-
 function touchMoved() {
   // Draw some white circles
 
@@ -119,15 +123,17 @@ function touchMoved() {
       }
       fill(randR,randG,randB);
       noStroke();
-      ellipse(touchX,touchY,50,50);
+      osc.amp(map(accelerationX,0,100,0,0.9));
+     osc.phase(map(accelerationY,0,100,0,0.9));
+      ellipse(touchX,touchY,accelerationX,accelerationY);
 
-  var key = floor(map(touchX, 0, width, 0, notes.length));
+  var key = floor(map(touchX, touchY, width, height, notes.length));
   playNote(notes[key]);
   // Send the mouse coordinates
-  sendmouse(touchX,touchY);
+  sendmouse(touchX,touchY,accelerationX,accelerationY);
 
-  noStroke();
-  fill(0,0,0,10);
+  // noStroke();
+  // fill(0,0,0,10);
 
 }
 
@@ -136,14 +142,16 @@ function touchEnded() {
 }
 
 // Function for sending to the socket
-function sendmouse(xpos, ypos) {
+function sendmouse(xpos, ypos, xacc, yacc) {
   // We are sending!
  // console.log("sendmouse: " + xpos + " " + ypos);
   
   // Make a little object with  and y
   var data = {
     x: xpos,
-    y: ypos
+    y: ypos,
+    a: xacc,
+    b: yacc
   };
 
   // Send that object to the socket
