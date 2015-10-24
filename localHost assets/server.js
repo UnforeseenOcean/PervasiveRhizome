@@ -12,9 +12,9 @@ var path = require('path');
 var fs = require('fs');
 
 var server = http.createServer(handleRequest);
-server.listen(8080);
+server.listen(8001);
 
-console.log('Server started on port 8080');
+console.log('Server started on port 8001');
 
 function handleRequest(req, res) {
   // What did we request?

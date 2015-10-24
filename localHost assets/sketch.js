@@ -31,7 +31,7 @@ function setup() {
   //background(0);
   // Start a socket connection to the server
   // Some day we would run this server somewhere else
-  socket = io.connect('http://10.1.1.153:8080');
+  socket = io.connect('http://10.1.1.203:8001');
  // randomShape=random(0,2);
   randR=random(0,255);
   randG=random(0,255);
@@ -73,7 +73,7 @@ function setup() {
       // Draw a blue circle
      // randomShape=random(0,2);
       randomChance=random(0,1000);
-      if(randomChance<10)
+      if(randomChance<1)
       {
         randR=random(0,255);
         randG=random(0,255);
@@ -114,7 +114,7 @@ function touchMoved() {
   // Draw some white circles
 
     randomChance=random(0,1000);
-      if(randomChance<10)
+      if(randomChance<1)
       {
         randR=random(0,255);
         randG=random(0,255);
